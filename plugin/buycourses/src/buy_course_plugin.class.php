@@ -392,7 +392,7 @@ class BuyCoursesPlugin extends Plugin
         $sql = "CREATE TABLE IF NOT EXISTS $table (
             id int unsigned NOT NULL AUTO_INCREMENT,
             coupon_id int unsigned NOT NULL,
-            sale_id int unsigned NOT NULL            
+            sale_id int unsigned NOT NULL
             PRIMARY KEY (id)
         )";
         Database::query($sql);
@@ -401,7 +401,7 @@ class BuyCoursesPlugin extends Plugin
         $sql = "CREATE TABLE IF NOT EXISTS $table (
             id int unsigned NOT NULL AUTO_INCREMENT,
             coupon_id int unsigned NOT NULL,
-            service_sale_id int unsigned NOT NULL            
+            service_sale_id int unsigned NOT NULL
             PRIMARY KEY (id)
         )";
         Database::query($sql);        
