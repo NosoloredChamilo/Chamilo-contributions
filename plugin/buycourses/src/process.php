@@ -34,6 +34,16 @@ $buyingCourse = intval($_REQUEST['t']) === BuyCoursesPlugin::PRODUCT_TYPE_COURSE
 $buyingSession = intval($_REQUEST['t']) === BuyCoursesPlugin::PRODUCT_TYPE_SESSION;
 $queryString = 'i='.intval($_REQUEST['i']).'&t='.intval($_REQUEST['t']);
 
+if (isset($_REQUEST['c'])) {
+    $couponCode = $_REQUEST['c'];
+    if ($buyingCourse) {
+        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
+    }
+    else {
+        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
+    }
+}
+
 if (empty($currentUserId)) {
     Session::write('buy_course_redirect', api_get_self().'?'.$queryString);
     header('Location: '.api_get_path(WEB_CODE_PATH).'auth/inscription.php');
