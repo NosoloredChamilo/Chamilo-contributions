@@ -34,6 +34,11 @@ class BuyCoursesPlugin extends Plugin
     const TABLE_GLOBAL_CONFIG = 'plugin_buycourses_global_config';
     const TABLE_INVOICE = 'plugin_buycourses_invoices';
     const TABLE_TPV_REDSYS = 'plugin_buycourses_tpvredsys_account';
+    const TABLE_COUPON = 'plugin_buycourses_coupon';
+    const TABLE_COUPON_ITEM = 'plugin_buycourses_coupon_rel_item';
+    const TABLE_COUPON_SERVICE = 'plugin_buycourses_coupon_rel_service';
+    const TABLE_COUPON_SALE = 'plugin_buycourses_coupon_rel_sale';
+    const TABLE_COUPON_SERVICE_SALE = 'plugin_buycourses_coupon_rel_service_sale';    
     const PRODUCT_TYPE_COURSE = 1;
     const PRODUCT_TYPE_SESSION = 2;
     const PAYMENT_TYPE_PAYPAL = 1;
@@ -140,6 +145,11 @@ class BuyCoursesPlugin extends Plugin
             self::TABLE_GLOBAL_CONFIG,
             self::TABLE_INVOICE,
             self::TABLE_TPV_REDSYS,
+            self::TABLE_COUPON,
+            self::TABLE_COUPON_ITEM,
+            self::TABLE_COUPON_SERVICE,
+            self::TABLE_COUPON_SALE,
+            self::TABLE_COUPON_SERVICE_SALE,
         ];
         $em = Database::getManager();
         $cn = $em->getConnection();
@@ -173,6 +183,11 @@ class BuyCoursesPlugin extends Plugin
             self::TABLE_GLOBAL_CONFIG,
             self::TABLE_INVOICE,
             self::TABLE_TPV_REDSYS,
+            self::TABLE_COUPON,
+            self::TABLE_COUPON_ITEM,
+            self::TABLE_COUPON_SERVICE,
+            self::TABLE_COUPON_SALE,
+            self::TABLE_COUPON_SERVICE_SALE,
         ];
 
         foreach ($tablesToBeDeleted as $tableToBeDeleted) {
@@ -260,6 +275,20 @@ class BuyCoursesPlugin extends Plugin
             }
         }
 
+        $sql = "SHOW COLUMNS FROM $table WHERE Field = 'price_without_discount'";
+        $res = Database::query($sql);
+
+        if (Database::num_rows($res) === 0) {
+            $sql = "ALTER TABLE $table ADD (
+                price_without_discount decimal(10,2) NOT NULL,
+                discount_amount decimal(10,2) NOT NULL
+            )";
+            $res = Database::query($sql);
+            if (!$res) {
+                echo Display::return_message($this->get_lang('ErrorUpdateFieldDB'), 'warning');
+            }
+        }
+
         $table = self::TABLE_SERVICES_SALE;
         $sql = "SHOW COLUMNS FROM $table WHERE Field = 'tax_perc'";
         $res = Database::query($sql);
@@ -276,6 +305,20 @@ class BuyCoursesPlugin extends Plugin
                 echo Display::return_message($this->get_lang('ErrorUpdateFieldDB'), 'warning');
             }
         }
+
+        $sql = "SHOW COLUMNS FROM $table WHERE Field = 'price_without_discount'";
+        $res = Database::query($sql);
+
+        if (Database::num_rows($res) === 0) {
+            $sql = "ALTER TABLE $table ADD (
+                price_without_discount decimal(10,2) NOT NULL,
+                discount_amount decimal(10,2) NOT NULL
+            )";
+            $res = Database::query($sql);
+            if (!$res) {
+                echo Display::return_message($this->get_lang('ErrorUpdateFieldDB'), 'warning');
+            }
+        }        
 
         $table = self::TABLE_INVOICE;
         $sql = "CREATE TABLE IF NOT EXISTS $table (
@@ -312,6 +355,56 @@ class BuyCoursesPlugin extends Plugin
                 'url_redsys_sandbox' => 'https://sis-t.redsys.es:25443/sis/realizarPago',
             ]);
         }
+
+        $table = self::TABLE_COUPON;
+        $sql = "CREATE TABLE IF NOT EXISTS $table (
+            id int unsigned NOT NULL AUTO_INCREMENT,
+            discount_type int unsigned NOT NULL,
+            discount_amount decimal(10, 2) NOT NULL,
+            valid_start datetime NOT NULL,
+            valid_end datetime NOT NULL,
+            delivered varchar(255) NOT NULL,
+            url_redsys int unsigned) NOT NULL
+            PRIMARY KEY (id)
+        )";
+        Database::query($sql);
+
+        $table = self::TABLE_COUPON_ITEM;
+        $sql = "CREATE TABLE IF NOT EXISTS $table (
+            id int unsigned NOT NULL AUTO_INCREMENT,
+            coupon_id int unsigned NOT NULL,
+            product_type int unsigned NOT NULL,
+            product_id int unsigned NOT NULL
+            PRIMARY KEY (id)
+        )";
+        Database::query($sql);
+
+        $table = self::TABLE_COUPON_SERVICE;
+        $sql = "CREATE TABLE IF NOT EXISTS $table (
+            id int unsigned NOT NULL AUTO_INCREMENT,
+            coupon_id int unsigned NOT NULL,
+            service_id int unsigned NOT NULL
+            PRIMARY KEY (id)
+        )";
+        Database::query($sql);
+
+        $table = self::TABLE_COUPON_SALE;
+        $sql = "CREATE TABLE IF NOT EXISTS $table (
+            id int unsigned NOT NULL AUTO_INCREMENT,
+            sale_id int unsigned NOT NULL,
+            coupon_id int unsigned NOT NULL
+            PRIMARY KEY (id)
+        )";
+        Database::query($sql);
+
+        $table = self::TABLE_COUPON_SERVICE_SALE;
+        $sql = "CREATE TABLE IF NOT EXISTS $table (
+            id int unsigned NOT NULL AUTO_INCREMENT,
+            service_sale_id int unsigned NOT NULL,
+            coupon_id int unsigned NOT NULL
+            PRIMARY KEY (id)
+        )";
+        Database::query($sql);        
 
         Display::addFlash(
             Display::return_message(
