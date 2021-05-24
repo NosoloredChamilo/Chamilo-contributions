@@ -41,6 +41,7 @@ class BuyCoursesPlugin extends Plugin
     const TABLE_COUPON_SERVICE_SALE = 'plugin_buycourses_coupon_rel_service_sale';    
     const PRODUCT_TYPE_COURSE = 1;
     const PRODUCT_TYPE_SESSION = 2;
+    const PRODUCT_TYPE_SERVICE = 3;
     const PAYMENT_TYPE_PAYPAL = 1;
     const PAYMENT_TYPE_TRANSFER = 2;
     const PAYMENT_TYPE_CULQI = 3;
@@ -3402,6 +3403,96 @@ class BuyCoursesPlugin extends Plugin
             $serviceSaleTable,
             ['status' => (int) $newStatus],
             ['id = ?' => (int) $serviceSaleId]
+        );
+    }
+
+        /**
+     * Get data of the coupon code.
+     *
+     * @param string $couponCode The coupon code code
+     * @param int $productId The product id
+     * @param int $productType The product type
+     *
+     * @return array The coupon data
+     */
+    public function getCoupon($couponCode, $productType, $productId)
+    {
+        switch ($productType) {
+            case self::PRODUCT_TYPE_COURSE || self::PRODUCT_TYPE_SESSION:
+                $coupon = $this->getDataCoupon($couponCode, $productType, $productId);
+                break;
+            case self::PRODUCT_TYPE_SERVICE:
+                $coupon = $this->getDataCouponService($couponCode, $productId);
+                break;
+        }
+
+        return $coupon;
+    }
+
+    /**
+     * Get data of coupon.
+     *
+     * @param string $couponCode The coupon code code
+     * @param int $productId The product id
+     * @param int $productType The product type
+     *
+     * @return array The coupon data
+     */
+    public function getDataCoupon($couponCode, $productType, $productId)
+    {
+        $couponTable = Database::get_main_table(self::TABLE_COUPON);
+        $couponItemTable = Database::get_main_table(self::TABLE_COUPON_ITEM);
+
+        $couponFrom = "
+            $couponTable c
+            INNER JOIN $couponItemTable ci
+                on ci.coupon_id = c.id
+        ";
+
+        return Database::select(
+            ['c.*'],
+            $couponFrom,
+            [
+                'where' => [
+                    'c.code = ? AND ' => (string) $couponCode,
+                    'ci.product_type = ? AND ' => (int) $productType,
+                    'ci.product_id = ?' => (int) $productId,
+                ],
+            ],
+            'first'
+        );
+    }
+
+    /**
+     * Get data of coupon.
+     *
+     * @param string $couponCode The coupon code code
+     * @param int $productId The product id
+     * @param int $productType The product type
+     *
+     * @return array The coupon data
+     */
+    public function getDataCouponService($couponCode, $productId)
+    {
+        $couponTable = Database::get_main_table(self::TABLE_COUPON);
+        $couponServiceTable = Database::get_main_table(self::TABLE_COUPON_SERVICE);
+
+        $couponFrom = "
+            $couponTable c
+            INNER JOIN $couponServiceTable cs
+                on cs.coupon_id = c.id
+        ";
+
+        return Database::select(
+            ['c.*'],
+            $couponFrom,
+            [
+                'where' => [
+                    'c.code = ? AND ' => (string) $couponCode,
+                    'cs.service_id = ?' => (int) $productId,
+                ],
+            ],
+            'first'
         );
     }
 }
