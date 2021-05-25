@@ -66,6 +66,8 @@ class BuyCoursesPlugin extends Plugin
     const TAX_APPLIES_TO_ONLY_SESSION = 3;
     const TAX_APPLIES_TO_ONLY_SERVICES = 4;
     const PAGINATION_PAGE_SIZE = 6;
+    const COUPON_DISCOUNT_TYPE_PERCENTAGE = 1;
+    const COUPON_DISCOUNT_TYPE_AMOUNT = 2;
 
     public $isAdminPlugin = true;
 
@@ -727,10 +729,11 @@ class BuyCoursesPlugin extends Plugin
      *
      * @param int $productId The item ID
      * @param int $itemType  The item type
+     * @param array $coupon
      *
      * @return array
      */
-    public function getItemByProduct($productId, $itemType)
+    public function getItemByProduct($productId, $itemType, $coupon = null)
     {
         $buyItemTable = Database::get_main_table(self::TABLE_ITEM);
         $buyCurrencyTable = Database::get_main_table(self::TABLE_CURRENCY);
@@ -759,7 +762,7 @@ class BuyCoursesPlugin extends Plugin
             return false;
         }
 
-        $this->setPriceSettings($product, self::TAX_APPLIES_TO_ONLY_COURSE);
+        $this->setPriceSettings($product, self::TAX_APPLIES_TO_ONLY_COURSE, $coupon);
 
         return $product;
     }
@@ -2408,16 +2411,29 @@ class BuyCoursesPlugin extends Plugin
     /**
      * @param array $product
      * @param int   $productType
+     * @param array   $coupon
      *
      * @return bool
      */
-    public function setPriceSettings(&$product, $productType)
+    public function setPriceSettings(&$product, $productType, $coupon = null)
     {
         if (empty($product)) {
             return false;
         }
 
         $taxPerc = null;
+        $product['has_coupon'] = $coupon != null ? true : false;
+        if ($coupon != null) {
+            $couponDiscount = 0;
+            if ($coupon['discount_type'] == self::COUPON_DISCOUNT_TYPE_AMOUNT) {
+                $couponDiscount = $coupon['discount_amount'];
+            } else if ($coupon['discount_type'] == self::COUPON_DISCOUNT_TYPE_PERCENTAGE) {
+                $couponDiscount = (100 * $coupon['discount_amount']) / $product['price'];
+            }
+            $product['price_without_discount'] = $product['price'];
+            $product['discount_amount'] = $couponDiscount;
+            $product['price'] = $product['price'] - $couponDiscount;
+        }
         $priceWithoutTax = $product['price'];
         $product['total_price'] = $product['price'];
         $product['tax_amount'] = 0;
@@ -2450,14 +2466,27 @@ class BuyCoursesPlugin extends Plugin
             number_format($product['total_price'], $precision),
             $product['iso_code']
         );
+
+        if ($coupon != null) {
+            $product['discount_amount_formatted'] = $this->getPriceWithCurrencyFromIsoCode(
+                number_format($product['discount_amount'], $precision),
+                $product['iso_code']
+            );
+
+            $product['price_without_discount_formatted'] = $this->getPriceWithCurrencyFromIsoCode(
+                number_format($product['price_without_discount'], $precision),
+                $product['iso_code']
+            );
+        }
     }
 
     /**
      * @param int $id
+     * @param array $coupon
      *
      * @return array
      */
-    public function getService($id)
+    public function getService($id, $coupon = null)
     {
         $id = (int) $id;
 
@@ -2482,7 +2511,7 @@ class BuyCoursesPlugin extends Plugin
         $service['iso_code'] = $isoCode;
         $globalParameters = $this->getGlobalParameters();
 
-        $this->setPriceSettings($service, self::TAX_APPLIES_TO_ONLY_SERVICES);
+        $this->setPriceSettings($service, self::TAX_APPLIES_TO_ONLY_SERVICES, $coupon);
 
         $service['tax_name'] = $globalParameters['tax_name'];
         $service['tax_enable'] = $this->checkTaxEnabledInProduct(self::TAX_APPLIES_TO_ONLY_SERVICES);

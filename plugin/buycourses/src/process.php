@@ -52,10 +52,10 @@ if (empty($currentUserId)) {
 
 if ($buyingCourse) {
     $courseInfo = $plugin->getCourseInfo($_REQUEST['i']);
-    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_COURSE);
+    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $coupon);
 } elseif ($buyingSession) {
     $sessionInfo = $plugin->getSessionInfo($_REQUEST['i']);
-    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_SESSION);
+    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $coupon);
 }
 
 $form = new FormValidator('confirm_sale');
