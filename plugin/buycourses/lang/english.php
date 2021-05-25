@@ -239,3 +239,6 @@ $strings['InfoEmailExtra'] = "Extra info in payment e-mail";
 $strings['Coupon'] = "Coupon";
 $strings['DiscountAmount'] = "Discount amount";
 $strings['RedeemCoupon'] = "Redeem";
+$strings['NeedToAddCouponCode'] = "A coupon code has not been entered";
+$strings['CouponNotValid'] = "This coupon is not valid";
+$strings['CouponRedeemed'] = "Coupon redeemed";

@@ -32,11 +32,6 @@
                                     <div class="price-details-tax">
                                         {{ 'Price'|get_plugin_lang('BuyCoursesPlugin') }} :
                                         {{ course.item.price_formatted }}
-                                        {% if course.item.has_coupon %}
-                                            <br>
-                                            {{ 'DiscountAmount'|get_plugin_lang('BuyCoursesPlugin') }}:
-                                            {{ course.item.discount_amount_formatted }}
-                                        {% endif %}
                                         <br>
                                         {{ course.tax_name }} ({{ course.item.tax_perc_show }}%):
                                         {{ course.item.tax_amount_formatted }}
@@ -45,6 +40,15 @@
                                 <div class="price">
                                     {{ 'Total'|get_plugin_lang('BuyCoursesPlugin') }} :
                                     {{ course.item.total_price_formatted }}
+                                </div>
+                                {% if course.item.has_coupon %}
+                                    <div class="price-details-tax">
+                                        {{ 'DiscountAmount'|get_plugin_lang('BuyCoursesPlugin') }}:
+                                        {{ course.item.discount_amount_formatted }}
+                                    </div>
+                                {% endif %}
+                                <div class="coupon">
+                                    {{ form_coupon }}
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -94,6 +98,12 @@
                                     {{ 'Total'|get_plugin_lang('BuyCoursesPlugin') }} :
                                     {{ session.item.total_price_formatted }}
                                 </div>
+                                {% if session.item.has_coupon %}
+                                    <div class="price-details-tax">
+                                        {{ 'DiscountAmount'|get_plugin_lang('BuyCoursesPlugin') }}:
+                                        {{ session.item.discount_amount_formatted }}
+                                    </div>
+                                {% endif %}
                                 <div class="coupon">
                                     {{ form_coupon }}
                                 </div>

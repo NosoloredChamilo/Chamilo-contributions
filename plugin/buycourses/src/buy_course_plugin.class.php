@@ -942,7 +942,7 @@ class BuyCoursesPlugin extends Plugin
      *
      * @return array
      */
-    public function getCourseInfo($courseId)
+    public function getCourseInfo($courseId, $coupon = null)
     {
         $entityManager = Database::getManager();
         $course = $entityManager->find('ChamiloCoreBundle:Course', $courseId);
@@ -953,7 +953,8 @@ class BuyCoursesPlugin extends Plugin
 
         $item = $this->getItemByProduct(
             $course->getId(),
-            self::PRODUCT_TYPE_COURSE
+            self::PRODUCT_TYPE_COURSE,
+            $coupon
         );
 
         if (empty($item)) {
@@ -1012,7 +1013,7 @@ class BuyCoursesPlugin extends Plugin
      *
      * @return array
      */
-    public function getSessionInfo($sessionId)
+    public function getSessionInfo($sessionId, $coupon = null)
     {
         $entityManager = Database::getManager();
         $session = $entityManager->find('ChamiloCoreBundle:Session', $sessionId);
@@ -1023,7 +1024,8 @@ class BuyCoursesPlugin extends Plugin
 
         $item = $this->getItemByProduct(
             $session->getId(),
-            self::PRODUCT_TYPE_SESSION
+            self::PRODUCT_TYPE_SESSION,
+            $coupon
         );
 
         if (empty($item)) {
@@ -2423,17 +2425,17 @@ class BuyCoursesPlugin extends Plugin
 
         $taxPerc = null;
         $product['has_coupon'] = $coupon != null ? true : false;
+        $couponDiscount = 0;
         if ($coupon != null) {
-            $couponDiscount = 0;
             if ($coupon['discount_type'] == self::COUPON_DISCOUNT_TYPE_AMOUNT) {
                 $couponDiscount = $coupon['discount_amount'];
             } else if ($coupon['discount_type'] == self::COUPON_DISCOUNT_TYPE_PERCENTAGE) {
                 $couponDiscount = (100 * $coupon['discount_amount']) / $product['price'];
             }
             $product['price_without_discount'] = $product['price'];
-            $product['discount_amount'] = $couponDiscount;
-            $product['price'] = $product['price'] - $couponDiscount;
         }
+        $product['discount_amount'] = $couponDiscount;
+        $product['price'] = $product['price'] - $couponDiscount;
         $priceWithoutTax = $product['price'];
         $product['total_price'] = $product['price'];
         $product['tax_amount'] = 0;
@@ -3479,6 +3481,7 @@ class BuyCoursesPlugin extends Plugin
     {
         $couponTable = Database::get_main_table(self::TABLE_COUPON);
         $couponItemTable = Database::get_main_table(self::TABLE_COUPON_ITEM);
+        $dtmNow = api_get_utc_datetime();
 
         $couponFrom = "
             $couponTable c
@@ -3492,6 +3495,8 @@ class BuyCoursesPlugin extends Plugin
             [
                 'where' => [
                     'c.code = ? AND ' => (string) $couponCode,
+                    'c.valid_start <= ? AND ' => $dtmNow,
+                    'c.valid_end >= ? AND ' => $dtmNow,
                     'ci.product_type = ? AND ' => (int) $productType,
                     'ci.product_id = ?' => (int) $productId,
                 ],
@@ -3512,6 +3517,7 @@ class BuyCoursesPlugin extends Plugin
     {
         $couponTable = Database::get_main_table(self::TABLE_COUPON);
         $couponServiceTable = Database::get_main_table(self::TABLE_COUPON_SERVICE);
+        $dtmNow = api_get_utc_datetime();
 
         $couponFrom = "
             $couponTable c
@@ -3525,6 +3531,8 @@ class BuyCoursesPlugin extends Plugin
             [
                 'where' => [
                     'c.code = ? AND ' => (string) $couponCode,
+                    'c.valid_start <= ? AND ' => $dtmNow,
+                    'c.valid_end >= ? AND ' => $dtmNow,
                     'cs.service_id = ?' => (int) $serviceId,
                 ],
             ],

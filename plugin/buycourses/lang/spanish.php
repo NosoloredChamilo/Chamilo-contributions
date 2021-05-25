@@ -239,3 +239,6 @@ $strings['InfoEmailExtra'] = "Información extra en e-mail";
 $strings['Coupon'] = "Cupón";
 $strings['DiscountAmount'] = "Descuento total";
 $strings['RedeemCoupon'] = "Canjear";
+$strings['NeedToAddCouponCode'] = "No se ha introducido un código de cupón";
+$strings['CouponNotValid'] = "El cupón no es valido";
+$strings['CouponRedeemed'] = "Cupón canjeado";

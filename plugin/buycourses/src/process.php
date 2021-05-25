@@ -51,11 +51,11 @@ if (empty($currentUserId)) {
 }
 
 if ($buyingCourse) {
-    $courseInfo = $plugin->getCourseInfo($_REQUEST['i']);
-    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $coupon);
+    $courseInfo = $plugin->getCourseInfo($_REQUEST['i'], $coupon);
+    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_COURSE);
 } elseif ($buyingSession) {
-    $sessionInfo = $plugin->getSessionInfo($_REQUEST['i']);
-    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $coupon);
+    $sessionInfo = $plugin->getSessionInfo($_REQUEST['i'], $coupon);
+    $item = $plugin->getItemByProduct($_REQUEST['i'], BuyCoursesPlugin::PRODUCT_TYPE_SESSION);
 }
 
 $form = new FormValidator('confirm_sale');
@@ -138,10 +138,10 @@ if ($formCoupon->validate()) {
     }
 
     if ($buyingCourse) {
-        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
+        $coupon = $plugin->getCoupon($formCouponValues['coupon_code'], BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
     }
     else {
-        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
+        $coupon = $plugin->getCoupon($formCouponValues['coupon_code'], BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
     }
 
 	if($coupon == null) {
@@ -151,6 +151,10 @@ if ($formCoupon->validate()) {
         header('Location:'.api_get_self().'?'.$queryString);
         exit;
 	}
+
+    Display::addFlash(
+        Display::return_message($plugin->get_lang('CouponRedeemed'), 'success', false)
+    );
 
 	header('Location: '.api_get_path(WEB_PLUGIN_PATH).'buycourses/src/process.php?i='.$_REQUEST['i'].'&t='. $_REQUEST['t'].'&c='.$formCouponValues['coupon_code']);
 

@@ -257,12 +257,12 @@ if (false === $sm->tablesExist(BuyCoursesPlugin::TABLE_SALE)) {
     $saleTable->addColumn('status', Types::INTEGER);
     $saleTable->addColumn('payment_type', Types::INTEGER);
     $saleTable->addColumn('invoice', Types::INTEGER);
-    $servicesNodeTable->addColumn(
+    $saleTable->addColumn(
         'price_without_discount',
         Types::DECIMAL,
         ['scale' => 2]
     );
-    $servicesNodeTable->addColumn(
+    $saleTable->addColumn(
         'discount_amount',
         Types::DECIMAL,
         ['scale' => 2]
