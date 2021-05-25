@@ -32,6 +32,11 @@
                                     <div class="price-details-tax">
                                         {{ 'Price'|get_plugin_lang('BuyCoursesPlugin') }} :
                                         {{ course.item.price_formatted }}
+                                        {% if course.item.has_coupon %}
+                                            <br>
+                                            {{ 'Discount_Amount'|get_plugin_lang('BuyCoursesPlugin') }}:
+                                            {{ course.item.discount_amount_formatted }}
+                                        {% endif %}
                                         <br>
                                         {{ course.tax_name }} ({{ course.item.tax_perc_show }}%):
                                         {{ course.item.tax_amount_formatted }}
