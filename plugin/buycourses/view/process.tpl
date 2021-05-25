@@ -94,6 +94,9 @@
                                     {{ 'Total'|get_plugin_lang('BuyCoursesPlugin') }} :
                                     {{ session.item.total_price_formatted }}
                                 </div>
+                                <div class="coupon">
+                                    {{ form_coupon }}
+                                </div>
                             </div>
                             <div class="col-md-9">
                                 <div class="buy-item">

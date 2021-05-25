@@ -71,6 +71,15 @@
     color: #666666;
 }
 
+.buy-info .coupon, .service-buy .coupon {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    letter-spacing: -0.020em;
+}
+
 .buy-summary {
     margin-top: 10px;
     border-top: 1px solid #CCCCCC;

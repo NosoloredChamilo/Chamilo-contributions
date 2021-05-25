@@ -125,6 +125,42 @@ $form->addHidden('t', intval($_GET['t']));
 $form->addHidden('i', intval($_GET['i']));
 $form->addButton('submit', $plugin->get_lang('ConfirmOrder'), 'check', 'success', 'btn-lg pull-right');
 
+$formCoupon = new FormValidator('confirm_coupon');
+if ($formCoupon->validate()) {
+    $formCouponValues = $formCoupon->getSubmitValues();
+
+    if (!$formCouponValues['coupon_code']) {
+        Display::addFlash(
+            Display::return_message($plugin->get_lang('NeedToAddCouponCode'), 'error', false)
+        );
+        header('Location:'.api_get_self().'?'.$queryString);
+        exit;
+    }
+
+    if ($buyingCourse) {
+        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
+    }
+    else {
+        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
+    }
+
+	if($coupon == null) {
+        Display::addFlash(
+            Display::return_message($plugin->get_lang('CouponNotValid'), 'error', false)
+        );
+        header('Location:'.api_get_self().'?'.$queryString);
+        exit;
+	}
+
+	header('Location: '.api_get_path(WEB_PLUGIN_PATH).'buycourses/src/process.php?i='.$_REQUEST['i'].'&t='. $_REQUEST['t'].'&c='.$formCouponValues['coupon_code']);
+
+    exit;
+}
+$formCoupon->addText('coupon_code', $plugin->get_lang('Coupon'), true);
+$formCoupon->addHidden('t', intval($_GET['t']));
+$formCoupon->addHidden('i', intval($_GET['i']));
+$formCoupon->addButton('submit', $plugin->get_lang('RedeemCoupon'), 'check', 'success', 'btn-lg pull-right');
+
 // View
 $templateName = $plugin->get_lang('PaymentMethods');
 $interbreadcrumb[] = ['url' => 'course_catalog.php', 'name' => $plugin->get_lang('CourseListOnSale')];
@@ -134,6 +170,7 @@ $tpl->assign('item_type', (int) $_GET['t']);
 $tpl->assign('buying_course', $buyingCourse);
 $tpl->assign('buying_session', $buyingSession);
 $tpl->assign('user', api_get_user_info());
+$tpl->assign('form_coupon', $formCoupon->returnForm());
 $tpl->assign('form', $form->returnForm());
 
 if ($buyingCourse) {
