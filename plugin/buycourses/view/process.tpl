@@ -34,7 +34,7 @@
                                         {{ course.item.price_formatted }}
                                         {% if course.item.has_coupon %}
                                             <br>
-                                            {{ 'Discount_Amount'|get_plugin_lang('BuyCoursesPlugin') }}:
+                                            {{ 'DiscountAmount'|get_plugin_lang('BuyCoursesPlugin') }}:
                                             {{ course.item.discount_amount_formatted }}
                                         {% endif %}
                                         <br>

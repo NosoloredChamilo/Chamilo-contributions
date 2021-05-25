@@ -236,4 +236,6 @@ $strings['url_redsys'] = "Redsys connection URL";
 $strings['url_redsys_sandbox'] = "Redsys connection URL (Sandbox)";
 $strings['InfoTpvRedsysApiCredentials'] = "You must complete the following form fields with the information provided by the Redsys POS Technical Support:";
 $strings['InfoEmailExtra'] = "Extra info in payment e-mail";
-$strings['Discount_Amount'] = "Discount amount";
+$strings['Coupon'] = "Coupon";
+$strings['DiscountAmount'] = "Discount amount";
+$strings['RedeemCoupon'] = "Redeem";

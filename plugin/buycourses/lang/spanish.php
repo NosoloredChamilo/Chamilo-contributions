@@ -236,4 +236,6 @@ $strings['url_redsys'] = "URL conexión Redsys";
 $strings['url_redsys_sandbox'] = "URL conexión Redsys (Pruebas)";
 $strings['InfoTpvRedsysApiCredentials'] = "Deberá completar los siguientes campos del formulario con la información que les facilite el Soporte Técnico del TPV Redsys:";
 $strings['InfoEmailExtra'] = "Información extra en e-mail";
-$strings['Discount_Amount'] = "Descuento total";
+$strings['Coupon'] = "Cupón";
+$strings['DiscountAmount'] = "Descuento total";
+$strings['RedeemCoupon'] = "Canjear";
