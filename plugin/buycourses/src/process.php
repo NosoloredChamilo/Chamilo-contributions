@@ -37,10 +37,10 @@ $queryString = 'i='.intval($_REQUEST['i']).'&t='.intval($_REQUEST['t']);
 if (isset($_REQUEST['c'])) {
     $couponCode = $_REQUEST['c'];
     if ($buyingCourse) {
-        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
+        $coupon = $plugin->getCouponByCode($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
     }
     else {
-        $coupon = $plugin->getCoupon($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
+        $coupon = $plugin->getCouponByCode($couponCode, BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
     }
 }
 
@@ -70,10 +70,19 @@ if ($form->validate()) {
         exit;
     }
 
-    $saleId = $plugin->registerSale($item['id'], $formValues['payment_type']);
+    $saleId = $plugin->registerSale($item['id'], $formValues['payment_type'], $formValues['c']);
 
     if ($saleId !== false) {
         $_SESSION['bc_sale_id'] = $saleId;
+
+        if(isset($formValues['c'])){
+            $couponSaleId = $plugin->registerCouponSale($saleId, $formValues['c']);
+            if($couponSaleId !== false) {
+                $plugin->updateCouponDelivered($formValues['c']);
+                $_SESSION['bc_coupon_id'] = $formValues['c'];
+            }
+        }
+
         header('Location: '.api_get_path(WEB_PLUGIN_PATH).'buycourses/src/process_confirm.php');
     }
 
@@ -123,6 +132,9 @@ if ($count === 0) {
 
 $form->addHidden('t', intval($_GET['t']));
 $form->addHidden('i', intval($_GET['i']));
+if ( $coupon != null) {
+    $form->addHidden('c', intval($coupon['id']));
+}
 $form->addButton('submit', $plugin->get_lang('ConfirmOrder'), 'check', 'success', 'btn-lg pull-right');
 
 $formCoupon = new FormValidator('confirm_coupon');
@@ -138,10 +150,10 @@ if ($formCoupon->validate()) {
     }
 
     if ($buyingCourse) {
-        $coupon = $plugin->getCoupon($formCouponValues['coupon_code'], BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
+        $coupon = $plugin->getCouponByCode($formCouponValues['coupon_code'], BuyCoursesPlugin::PRODUCT_TYPE_COURSE, $_REQUEST['i']);
     }
     else {
-        $coupon = $plugin->getCoupon($formCouponValues['coupon_code'], BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
+        $coupon = $plugin->getCouponByCode($formCouponValues['coupon_code'], BuyCoursesPlugin::PRODUCT_TYPE_SESSION, $_REQUEST['i']);
     }
 
 	if($coupon == null) {
