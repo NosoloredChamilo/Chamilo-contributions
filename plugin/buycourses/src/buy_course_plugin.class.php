@@ -3406,7 +3406,7 @@ class BuyCoursesPlugin extends Plugin
         );
     }
 
-        /**
+    /**
      * Get data of the coupon code.
      *
      * @param string $couponCode The coupon code code
@@ -3468,11 +3468,10 @@ class BuyCoursesPlugin extends Plugin
      *
      * @param string $couponCode The coupon code code
      * @param int $productId The product id
-     * @param int $productType The product type
      *
      * @return array The coupon data
      */
-    public function getDataCouponService($couponCode, $productId)
+    public function getDataCouponService($couponCode, $serviceId)
     {
         $couponTable = Database::get_main_table(self::TABLE_COUPON);
         $couponServiceTable = Database::get_main_table(self::TABLE_COUPON_SERVICE);
@@ -3489,7 +3488,7 @@ class BuyCoursesPlugin extends Plugin
             [
                 'where' => [
                     'c.code = ? AND ' => (string) $couponCode,
-                    'cs.service_id = ?' => (int) $productId,
+                    'cs.service_id = ?' => (int) $serviceId,
                 ],
             ],
             'first'
