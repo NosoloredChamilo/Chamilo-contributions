@@ -3417,14 +3417,22 @@ class BuyCoursesPlugin extends Plugin
      */
     public function getCoupon($couponCode, $productType, $productId)
     {
-        switch ($productType) {
-            case self::PRODUCT_TYPE_COURSE || self::PRODUCT_TYPE_SESSION:
-                $coupon = $this->getDataCoupon($couponCode, $productType, $productId);
-                break;
-            case self::PRODUCT_TYPE_SERVICE:
-                $coupon = $this->getDataCouponService($couponCode, $productId);
-                break;
-        }
+        $coupon = $this->getDataCoupon($couponCode, $productType, $productId);
+
+        return $coupon;
+    }
+
+    /**
+     * Get data of the coupon code for a service.
+     *
+     * @param string $couponCode The coupon code code
+     * @param int $serviceId The product id
+     *
+     * @return array The coupon data
+     */
+    public function getCouponService($couponCode, $serviceId)
+    {
+        $coupon = $this->getDataCouponService($couponCode, $serviceId);
 
         return $coupon;
     }
