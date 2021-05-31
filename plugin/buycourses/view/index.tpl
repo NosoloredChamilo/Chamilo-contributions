@@ -50,6 +50,19 @@
         </div>
         <div class="col-md-3">
             <div class="thumbnail">
+                <a href="src/coupons.php">
+                    <img src="resources/img/128/paymentsettings.png">
+                </a>
+                <div class="caption">
+                    <p class="text-center">
+                        <a class="btn btn-default btn-sm"
+                           href="src/coupons.php">{{ 'CouponsConfiguration'|get_plugin_lang('BuyCoursesPlugin') }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="thumbnail">
                 <a href="src/paymentsetup.php">
                     <img src="resources/img/128/paymentsettings.png">
                 </a>

@@ -260,12 +260,12 @@ if (false === $sm->tablesExist(BuyCoursesPlugin::TABLE_SALE)) {
     $saleTable->addColumn(
         'price_without_discount',
         Types::DECIMAL,
-        ['scale' => 2]
+        ['scale' => 2, 'notnull' => false]
     );
     $saleTable->addColumn(
         'discount_amount',
         Types::DECIMAL,
-        ['scale' => 2]
+        ['scale' => 2, 'notnull' => false]
     );
     $saleTable->setPrimaryKey(['id']);
     $saleTable->addForeignKeyConstraint(
@@ -353,12 +353,12 @@ if (false === $sm->tablesExist(BuyCoursesPlugin::TABLE_SERVICES_SALE)) {
     $servicesNodeTable->addColumn(
         'price_without_discount',
         Types::DECIMAL,
-        ['scale' => 2]
+        ['scale' => 2, 'notnull' => false]
     );
     $servicesNodeTable->addColumn(
         'discount_amount',
         Types::DECIMAL,
-        ['scale' => 2]
+        ['scale' => 2, 'notnull' => false]
     );
     $servicesNodeTable->setPrimaryKey(['id']);
     $servicesNodeTable->addForeignKeyConstraint(
@@ -447,6 +447,7 @@ if (false === $sm->tablesExist(BuyCoursesPlugin::TABLE_COUPON)) {
 	$couponTable->addColumn('valid_start', Types::DATETIME_MUTABLE);
 	$couponTable->addColumn('valid_end', Types::DATETIME_MUTABLE);
 	$couponTable->addColumn('delivered', Types::INTEGER);
+    $couponTable->addColumn('active', Types::TINYINT);
     $couponTable->setPrimaryKey(['id']);
 }
 
